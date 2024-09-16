@@ -19,7 +19,7 @@ The main functions of CTDB are:
 
 
 
-## Installation of necessary packages
+## 1.Installation of necessary packages
 
 	apt install -y samba ctdb 
 	
@@ -30,11 +30,11 @@ The main functions of CTDB are:
 The later three services will be started by ctdbd and not systemd.
 
 
-## Configuration of CTDB
+## 2.Configuration of CTDB
 
 **All these configuaration files should be same on all nodes !!**
 
-### ctdb.service unit
+### * ctdb.service unit
 
 
 There are two bug reports open: [No /run/ctdb directory](https://bugs.launchpad.net/ubuntu/+source/ctdb/+bug/1821775) and [No /var/lib/ctdb directories](https://bugs.launchpad.net/ubuntu/+source/ctdb/+bug/1828799)
@@ -45,7 +45,7 @@ The following directories have to be created:
 	mkdir /var/lib/ctdb/persistent
 	mkdir /var/lib/ctdb/state
 
-### ctdb.conf
+### * ctdb.conf
 
 The `/etc/ctdb/ctdb.conf` file contains the recovery lock location in the cluster section. This has to be a file on the shared folder:
 
@@ -56,7 +56,7 @@ Create the necessary directory
 
 	mkdir /mnt/shared_folder/ctdb
 
-### nodes
+### * nodes
 
 The file `/etc/ctdb/nodes` contains all **node IPs** (i.e. host IPs/ backend IPs). CTDB uses private IP addresses to communicate between nodes. Connections are made to IANA assigned TCP **port 4379** on each node. E.g.:
 
@@ -65,7 +65,7 @@ The file `/etc/ctdb/nodes` contains all **node IPs** (i.e. host IPs/ backend IPs
   	172.16.1.2
   	172.16.1.3
 
-### public_addresses
+### * public_addresses
 
 The file `/etc/ctdb/public_addresses` contains the list of **service IPs** (floating IPs) **same amount as node IPs** and the network mask and interfaces they should be applied to:
 
@@ -75,7 +75,7 @@ The file `/etc/ctdb/public_addresses` contains the list of **service IPs** (floa
 
 *The public addresses need to be put into the DNS services for the domain as multiple A records for the name of the fileserver cluster. This creates a round-robin DNS entry which load-balances the clients across the nodes.*
 
-### smb.conf
+### * smb.conf
 
 With CTDB all Samba configuration is stored in the clustered databases. The file `/etc/samba/smb.conf` only contains:
 
@@ -83,21 +83,21 @@ With CTDB all Samba configuration is stored in the clustered databases. The file
 		clustering = yes
 		include = registry
 
-### script.options
+### * script.options
 
 The file `/etc/ctdb/script.options` needs to contain the line:
 
 	CTDB_SAMBA_SKIP_SHARE_CHECK=yes
 	
 
-## Configure Samba
+## 3. Configure Samba
 
 Samba is now configured with `smb.conf` and first needs a working `[global]` section:
 
 
 	[global]
-  	clustering = yes
-  	include = registry
+  		clustering = yes
+  		include = registry
 		workgroup = EXAMPLE
 		security = user
 		netbios name = FILESERV
@@ -105,15 +105,15 @@ Samba is now configured with `smb.conf` and first needs a working `[global]` sec
 		log level = 3
 
 
-### Samba Shares
+### * Samba Shares
 
 
 	[sharename]
 		path = /export/sharename
 		writable = yes
-    read only = no
-    guest ok = yes
-    browseable = yes
+    		read only = no
+   		 guest ok = yes
+   		 browseable = yes
 
 
 ## Start CTDB 
@@ -133,4 +133,5 @@ Samba is now configured with `smb.conf` and first needs a working `[global]` sec
  * ctdb uptime
  * ctdb listnodes
  * ctdb event status legacy monitor
- * ctdb event script list legacy```
+ * ctdb event script list legacy
+```
